@@ -24,5 +24,6 @@ public class ServerActivity extends AppCompatActivity {
                 mServer.connect();
             }
         });
+
     }
 }

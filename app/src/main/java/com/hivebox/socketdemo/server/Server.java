@@ -1,12 +1,19 @@
 package com.hivebox.socketdemo.server;
 
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.hivebox.socketdemo.Constant;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -15,6 +22,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static android.os.Environment.DIRECTORY_MOVIES;
 
 /**
  * Created by hans on 2018/8/7.
@@ -85,6 +94,10 @@ public class Server {
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
                     System.out.println("给客户端发一个消息");
+
+
+                    // 发送视频文件
+                    sendFile(getVideoPath(), socket);
                 }
             }
 
@@ -106,4 +119,72 @@ public class Server {
         }
     }
 
-}
+
+    public String getVideoPath() {
+        // 在模拟器的sdcard/Movies目录下放了一个文件用来测试
+        File file = Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES);
+
+        File  xiaosongshuFile = new File(file, "xiaosongshu.mp4");
+        long length = xiaosongshuFile.length();
+        String path = xiaosongshuFile.getAbsolutePath();
+        Log.i("debug", TAG + " --> length = " + length + "   path = " + path);
+
+        return path;
+    }
+
+
+    public void sendFile(String filePath,Socket socket) {
+        DataOutputStream dos = null;
+        DataInputStream dis = null;
+
+        try {
+            File file = new File(filePath);
+            dos = new DataOutputStream(socket.getOutputStream());
+            dis = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath)));
+            int buffferSize = 1024;
+            byte[] bufArray = new byte[buffferSize];
+            dos.writeUTF(file.getName());
+            dos.flush();
+            dos.writeLong((long) file.length());
+            dos.flush();
+            while (true) {
+                int read = 0;
+                if (dis != null) {
+                    read = dis.read(bufArray);
+                }
+                if (read == -1) {
+                    break;
+                }
+                dos.write(bufArray, 0, read);
+            }
+            dos.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭所有连接
+            try {
+                if (dos != null)
+                    dos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (dis != null)
+                    dis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (socket != null)
+                    socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+
+    }
