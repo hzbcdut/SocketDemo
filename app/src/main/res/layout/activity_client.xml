@@ -4,20 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".ServerActivity"
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/btn_client"
+        android:id="@+id/start_connect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="进入client" />
+        android:text="建立socket连接"/>
 
     <Button
-        android:id="@+id/btn_server"
+        android:id="@+id/send_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="进入Server" />
-
+        android:text="发送消息"/>
 
 </LinearLayout>

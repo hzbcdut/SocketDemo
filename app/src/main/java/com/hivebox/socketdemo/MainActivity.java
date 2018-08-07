@@ -1,7 +1,12 @@
 package com.hivebox.socketdemo;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+import com.hivebox.socketdemo.client.Client;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -9,5 +14,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button clientBtn = findViewById(R.id.btn_client);
+        clientBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ClientActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        Button serverBtn = findViewById(R.id.btn_server);
+        serverBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ServerActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
