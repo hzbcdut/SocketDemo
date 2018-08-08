@@ -32,16 +32,16 @@ public class Client {
             @Override
             public void run() {
                 try {
-                    mSocket = new Socket(HOST, PORT);
+                    mSocket = new Socket(HOST, PORT); // 使用带参构造方法会阻塞，直到连接成功
+//                    mSocket = new Socket();
+//                    mSocket.connect(new InetSocketAddress(HOST, PORT), 50*1000);  // 这样连可以设置超时时间
                     Log.i("debug", TAG + " --> 连接状态 mSocket.isConnected() = " + mSocket.isConnected());
 
                     try {
-                        while (true) {
-                            BufferedReader bufferedReader_Server = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
-                            String message;
-                            while ((message = bufferedReader_Server.readLine()) != null) {
-                                System.out.println("来自服务器说：" + message);
-                            }
+                        BufferedReader bufferedReader_Server = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
+                        String message;
+                        while ((message = bufferedReader_Server.readLine()) != null) { // 没有内容时 readLine()会阻塞
+                            System.out.println("来自服务器说：" + message);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
