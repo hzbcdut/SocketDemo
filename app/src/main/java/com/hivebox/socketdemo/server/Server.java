@@ -75,10 +75,7 @@ public class Server {
 
             //处理接收消息
             in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-//            receiveMsg();
-
-
-            String message = "";
+            String message;
             while ((message = in.readLine()) != null) {
                 System.out.println("来自客户端【" + socket.getInetAddress().getHostAddress() + "】说:" + message);
 
@@ -105,20 +102,6 @@ public class Server {
             e.printStackTrace();
         }
     }
-
-    private void receiveMsg() {
-        try {
-            while (true) {
-                if ((receiveMsg = in.readLine()) != null) {
-                    Log.d(TAG, "receiveMsg:" + receiveMsg);
-                }
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "receiveMsg: ");
-            e.printStackTrace();
-        }
-    }
-
 
     public String getVideoPath() {
         // 在模拟器的sdcard/Movies目录下放了一个文件用来测试

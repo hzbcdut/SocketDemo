@@ -38,8 +38,10 @@ public class Client {
                     try {
                         while (true) {
                             BufferedReader bufferedReader_Server = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
-                            String getMessage = bufferedReader_Server.readLine();
-                            System.out.println("来自服务器说：" + getMessage);
+                            String message;
+                            while ((message = bufferedReader_Server.readLine()) != null) {
+                                System.out.println("来自服务器说：" + message);
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
