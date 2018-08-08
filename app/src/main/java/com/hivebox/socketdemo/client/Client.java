@@ -55,15 +55,13 @@ public class Client {
     }
 
     public void sendMessage(String msg) {
-        if (mSocket.isConnected()) {
+        if (mSocket != null && mSocket.isConnected()) {
             try {
                 //socket输出流。将信息数据输出给服务端
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream()));
                 bufferedWriter.write(msg);
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
-
-
             } catch (IOException e) {
                 e.printStackTrace();
             }

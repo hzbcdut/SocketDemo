@@ -33,6 +33,7 @@ public class Server {
     private static final String TAG = Server.class.getSimpleName();
 
     private ServerSocket mServerSocket;
+    private Socket socket;
 
     private ExecutorService mThreadPool;
 
@@ -50,8 +51,10 @@ public class Server {
                     while (true){
                         // 开始接收客户端连接
                         Socket client = mServerSocket.accept();
-                        Log.i("debug", TAG + " --> Server端建立连接");
+                        socket = client;
+                        Log.i("debug", TAG + " --> Server端建立连接  socket = " + socket + " client = " + client);
                         handleClient(client);
+
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -94,7 +97,7 @@ public class Server {
 
 
                     // 发送视频文件
-                    sendFile(getVideoPath(), socket);
+//                    sendFile(getVideoPath(), socket);
                 }
             }
 
@@ -116,9 +119,20 @@ public class Server {
     }
 
 
+    public void sendFile(final String filePath) {
+        if (socket != null && socket.isConnected()) {
+            mThreadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    sendFile(filePath, socket);
+                }
+            });
+        }
+    }
+
     public void sendFile(String filePath,Socket socket) {
-        DataOutputStream dos = null;
-        DataInputStream dis = null;
+        DataOutputStream dos;
+        DataInputStream dis;
 
         try {
             File file = new File(filePath);
@@ -146,25 +160,26 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            // 什么时候关闭好些？
             // 关闭所有连接
-            try {
-                if (dos != null)
-                    dos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                if (dis != null)
-                    dis.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                if (socket != null)
-                    socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                if (dos != null)
+//                    dos.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            try {
+//                if (dis != null)
+//                    dis.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            try {
+//                if (socket != null)
+//                    socket.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
 
     }
