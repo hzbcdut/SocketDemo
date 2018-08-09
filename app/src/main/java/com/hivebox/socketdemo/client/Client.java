@@ -46,6 +46,15 @@ public class Client {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+
+
+//                    BufferedSource bufferedSource = Okio.buffer(Okio.source(mSocket));
+//                    String receiveMsg;
+//                    while ((receiveMsg = bufferedSource.readUtf8()) != null) {
+//                        System.out.println("来自服务器说：" + receiveMsg);
+//                    }
+
+
                 } catch (IOException e) {
                     e.printStackTrace();
                     Log.i("debug", TAG + " --> 连接状态 e = " + e);

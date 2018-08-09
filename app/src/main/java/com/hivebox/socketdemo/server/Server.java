@@ -15,13 +15,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.Okio;
+import okio.Sink;
+import okio.Source;
 
 import static android.os.Environment.DIRECTORY_MOVIES;
 
@@ -72,32 +76,60 @@ public class Server {
         System.out.println("handleClient");
         // 使用socket进行通信
         try {
-            // 处理发送消息
-            printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-                    socket.getOutputStream(), "UTF-8")), true);
+//            // 处理发送消息
+//            printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+//                    socket.getOutputStream(), "UTF-8")), true);
+//
+//            //处理接收消息
+//            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+//            String message;
+//            while ((message = in.readLine()) != null) {
+//                System.out.println("来自客户端【" + socket.getInetAddress().getHostAddress() + "】说:" + message);
+//
+//                if (!TextUtils.isEmpty(message)&&message.equals(Constant.START_TASK)) {
+//                    bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+//                    try {
+//                        Thread.sleep(2000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    // 服务端发送消息给客户端
+//                    bufferedWriter.write(Constant.TASK_FINISHED);
+//                    bufferedWriter.newLine();
+//                    bufferedWriter.flush();
+//                    System.out.println("给客户端发一个消息");
+//
+//
+//                    // 发送视频文件
+////                    sendFile(getVideoPath(), socket);
+//                }
+//            }
 
-            //处理接收消息
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-            String message;
-            while ((message = in.readLine()) != null) {
-                System.out.println("来自客户端【" + socket.getInetAddress().getHostAddress() + "】说:" + message);
 
-                if (!TextUtils.isEmpty(message)&&message.equals(Constant.START_TASK)) {
-                    bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            // 使用Okio来处理流消息
+            Sink sink = Okio.sink(socket.getOutputStream());
+            BufferedSink bufferedSink = Okio.buffer(sink);
+
+
+            Source source = Okio.source(socket.getInputStream());
+            BufferedSource bufferedSource = Okio.buffer(source);
+            String receiveMsg;
+            while ((receiveMsg = bufferedSource.readUtf8Line()) != null) {
+                System.out.println("来自客户端【" + socket.getInetAddress().getHostAddress() + "】说:" + receiveMsg);
+
+                if (!TextUtils.isEmpty(receiveMsg)&&receiveMsg.equals(Constant.START_TASK)) {
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     // 服务端发送消息给客户端
-                    bufferedWriter.write(Constant.TASK_FINISHED);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
+
+                    byte[]  bytes = Constant.TASK_FINISHED.getBytes();
+//                    bufferedSink.writeUtf8(Constant.TASK_FINISHED);
+                    bufferedSink.write(bytes);
+                    bufferedSink.flush();
                     System.out.println("给客户端发一个消息");
-
-
-                    // 发送视频文件
-//                    sendFile(getVideoPath(), socket);
                 }
             }
 
